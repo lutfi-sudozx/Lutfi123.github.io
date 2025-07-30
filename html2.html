@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Popup Syarat & Ketentuan</title>
+</head>
+<body>
+<!-- POPUP SYARAT & KETENTUAN BLOG -->
+<div id="popup-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;">
+  <div id="popup-box" style="background:white;padding:20px 25px 30px 25px;border-radius:12px;max-width:600px;max-height:90vh;overflow-y:auto;box-shadow:0 4px 15px rgba(0,0,0,0.3);text-align:left;">
+    <h2 style="margin-top:0;margin-bottom:10px;">Syarat dan Ketentuan</h2>
+    <p style="margin-top:0;margin-bottom:10px;">Dengan mengakses blog ini, Anda menyetujui hal-hal berikut:</p>
+    <ul style="padding-left:1.8em;list-style-position:outside;margin:0;">
+      <li style="text-indent:-1.2em;padding-left:1.2em;margin-bottom:10px;">1. Informasi hanya untuk keperluan informasi umum.</li>
+      <li style="text-indent:-1.2em;padding-left:1.2em;margin-bottom:10px;">2. Dilarang menyebarkan konten tanpa izin tertulis dari pemilik.</li>
+      <li style="text-indent:-1.2em;padding-left:1.2em;margin-bottom:10px;">3. Tidak dijamin bahwa seluruh informasi akurat atau terkini.</li>
+      <li style="text-indent:-1.2em;padding-left:1.2em;margin-bottom:10px;">4. Komentar bermuatan negatif atau ilegal akan dihapus.</li>
+      <li style="text-indent:-1.2em;padding-left:1.2em;margin-bottom:10px;">5. Pemilik blog berhak mengubah isi tanpa pemberitahuan sebelumnya.</li>
+    </ul>
+
+    <div class="button-area" style="margin-top:30px;text-align:center;">
+      <button id="ok-button" disabled style="padding:14px 40px;font-size:16px;background:white;color:black;border:2px dashed #aaa;border-radius:12px;cursor:not-allowed;transition:all 0.3s ease;width:220px;">OK</button>
+      <div id="countdown" style="font-size:14px;color:#666;margin-top:10px;">Silakan tunggu 60 detik...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const okButton = document.getElementById('ok-button');
+    const popup = document.getElementById('popup-overlay');
+    const countdownText = document.getElementById('countdown');
+
+    const popupSeen = localStorage.getItem('popupSeen');
+    const popupStartTime = localStorage.getItem('popupStartTime');
+
+    if (!popupSeen) {
+      popup.style.display = 'flex';
+
+      const totalTime = 60; // in seconds
+      let startTime = popupStartTime ? parseInt(popupStartTime) : Date.now();
+
+      if (!popupStartTime) {
+        localStorage.setItem('popupStartTime', startTime);
+      }
+
+      function activateButton() {
+        countdownText.textContent = "Anda bisa menekan tombol OK sekarang.";
+        okButton.disabled = false;
+        okButton.style.backgroundColor = "#2c7be5";
+        okButton.style.color = "white";
+        okButton.style.border = "none";
+        okButton.style.cursor = "pointer";
+        okButton.style.fontWeight = "bold";
+      }
+
+      const now = Date.now();
+      const elapsed = Math.floor((now - startTime) / 1000);
+      const remaining = totalTime - elapsed;
+
+      if (remaining <= 0) {
+        activateButton();
+      } else {
+        countdownText.textContent = `Silakan tunggu ${remaining} detik...`;
+
+        const interval = setInterval(() => {
+          const now = Date.now();
+          const elapsed = Math.floor((now - startTime) / 1000);
+          const remaining = totalTime - elapsed;
+
+          if (remaining > 0) {
+            countdownText.textContent = `Silakan tunggu ${remaining} detik...`;
+          } else {
+            clearInterval(interval);
+            activateButton();
+          }
+        }, 1000);
+      }
+
+      okButton.addEventListener('click', function () {
+        localStorage.setItem('popupSeen', 'true'); // Set flag agar popup tidak muncul lagi
+        localStorage.removeItem('popupStartTime');
+        popup.style.display = 'none';
+      });
+    }
+  });
+</script>
+</body>
+</html>
